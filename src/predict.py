@@ -23,6 +23,7 @@ ids = ["ab_pair_{}".format(i) for i in range(data.shape[1])]
 data["id"] = ids
 heavy_embedding = sgt_.fit_transform(data[["id", "Hchain"]])
 light_embedding = sgt_.fit_transform(data[["id", "Lchain"]])
+#input transformed shoul have 800 cols containing 400 heavy and 400 light chains.
 input_transformed = pd.concat([heavy_embedding.set_index("id"), light_embedding.set_index("id")], axis=1)
 
 
