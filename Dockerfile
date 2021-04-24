@@ -17,4 +17,3 @@ RUN wget https://www.dropbox.com/s/4sdu3b3u83voldy/finalized_model.sav
 COPY . .
 
 ENTRYPOINT [ "python", "src/predict.py" ]
-
