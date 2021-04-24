@@ -4,6 +4,10 @@ import pandas as pd
 
 import extra_funcs
 
+from sklearn.ensemble import RandomForestClassifier
+from xgboost import XGBClassifier
+from lightgbm import LGBMClassifier
+
 from pandarallel import pandarallel
 
 # set up argument parsing (make sure these match those in config.yml)
