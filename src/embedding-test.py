@@ -27,7 +27,6 @@ corpus_light['sequence'] = corpus_light['sequence'].map(list)
 # process corpus to the right format (split sequences to list of chars)
 corpus_heavy.head()
 # %%
-% % time
 # Compute SGT embeddings
 sgt_ = SGT(kappa=1,
            lengthsensitive=False,
@@ -39,7 +38,7 @@ sgtembedding_light = sgt_.fit_transform(corpus_light.iloc[:10000,:])
 sgtembedding_heavy = sgt_.fit_transform(corpus_heavy.iloc[:10000,:])
 
 # %%
-meta_data = data.loc[:9999, ["tenx_barcode", "tenx_chain_heavy", "tenx_chain_light"]]
+meta_data = data.loc[:9999, ["index", "tenx_chain_heavy", "tenx_chain_light"]]
 
 # %%
 # join meta and the two embeddings
@@ -76,5 +75,7 @@ sgtembedding_light_out.columns = ["id"] + colnames
 
 embeddings_joined_out = pd.concat([sgtembedding_heavy_out.set_index(
     "id"), sgtembedding_light_out.set_index("id")], axis=1)
-#embeddings_joined_out.to_csv("embeddings_first_1000_Antibodies.csv")
+# %%
+embeddings_joined_out.to_csv("embeddings_first_10000_Antibodies.csv")
+
 # %%

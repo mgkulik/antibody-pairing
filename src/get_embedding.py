@@ -9,7 +9,7 @@ from sgt import SGT
 # %% ####
 """try to get embedding from original data"""
 pandarallel.initialize(nb_workers=4)
-data = pd.read_csv("antibody_pairing.csv")
+data = pd.read_csv("antibody_pairing.csv").reset_index()
 data['index'] = "paired_"+data['index'].astype(str)
 # %%
 data = data.loc[:, ["tenx_barcode", "sequence_heavy", "sequence_light",
@@ -28,10 +28,7 @@ corpus_heavy.head()
 sgt_ = SGT(kappa=1,
            lengthsensitive=False,
            mode='multiprocessing')
-sgtembedding_df = sgt_.fit_transform(corpus)
-# Set the id column as the dataframe index
-sgtembedding_df = sgtembedding_df.set_index('id')
-sgtembedding_df
+
 
 # %%
 # just take the first 1000 lines for testing
