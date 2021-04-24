@@ -66,6 +66,7 @@ for kappa in kappa_vals:
     colmap = {'IGH': 'r', 'IGK': 'g', 'IGL': 'b'}
     #colors = list(map(lambda x: colmap[x+1], types))
     sns.scatterplot(df['x1'], df['x2'], hue=types, alpha=0.5)
+    plt.savefig("pca_kappa_{}.png".format(kappa))
 
     sgtembedding_heavy_out = sgtembedding_heavy.copy()
     sgtembedding_light_out = sgtembedding_light.copy()

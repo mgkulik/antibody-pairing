@@ -1,4 +1,4 @@
-# ekm2
+# Ekm2
 
 Our team is from ... and we think proteins are cool 🙌
 
