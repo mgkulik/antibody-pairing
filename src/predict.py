@@ -19,7 +19,7 @@ args = parser.parse_args()
 data = pd.read_csv(args.infile)
 
 # embed both protein sequences respectively
-sgt_ = SGT(kappa=4,
+sgt_ = SGT(kappa=5,
             lengthsensitive=False,
             mode='multiprocessing')
 
