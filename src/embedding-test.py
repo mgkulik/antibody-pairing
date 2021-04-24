@@ -35,7 +35,7 @@ corpus_heavy.head()
 # Compute SGT embeddings
 sgt_ = SGT(kappa=1,
            lengthsensitive=False,
-           mode='multiprocessing')
+           mode='multiprocessinal)
 # %%
 # just take the first 1000 lines for testing
 sgtembedding_light = sgt_.fit_transform(corpus_light.iloc[:10000,:])
@@ -93,4 +93,4 @@ non_paired_embeddings = embeddings_joined.iloc[round(embeddings_joined.shape[0]/
 
 # %%
 numerical_columns = embeddings_joined.columns[1:]
-
+outputs
