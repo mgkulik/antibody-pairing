@@ -60,7 +60,7 @@ test_outputs = outputs[total_records-test_records:total_records]
 # declare nn class
 class Model(nn.Module):
 
-    def __init__(self, num_cols, output_size, layers, p=0.4):
+    def __init__(self, num_cols, output_size, layers, p=0.8):
         super().__init__()
         self.batch_norm_num = nn.BatchNorm1d(num_cols)
 
