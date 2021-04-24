@@ -16,8 +16,9 @@ from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
 #data = pd.concat([pd.read_csv(file , header=1) for  file in glob('csv/*/*')])
-#data.to_csv('antibody-pairing.csv', index=False)
+#data.to_csv('antibody_pairing.csv', index=False)
 data = pd.read_csv('antibody_pairing.csv').reset_index()
+data['index'] = "paired_"+data['index'].astype(str)
 
 # Generating short sample to test the model with anarci alignment
 random.seed(12345)
