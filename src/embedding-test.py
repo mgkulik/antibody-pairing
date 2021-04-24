@@ -17,8 +17,8 @@ import torch.nn as nn
 # %%
 """try to get embedding from original data"""
 pandarallel.initialize(nb_workers=8)
-data = pd.read_csv("antibody_pairing.csv").reset_index()
-data['index'] = "paired_"+data['index'].astype(str)
+data = pd.read_csv("antibody_pairing.csv")
+# data['index'] = "paired_"+data['index'].astype(str)
 
 # %%
 data = data.loc[:, ["index", "sequence_alignment_aa_heavy", "sequence_alignment_aa_light",
@@ -38,16 +38,12 @@ for kappa in kappa_vals:
     sgt_ = SGT(kappa=kappa,
             lengthsensitive=False,
             mode='multiprocessing')
-    # %%
     # just take the first 1000 lines for testing
     sgtembedding_light = sgt_.fit_transform(corpus_light.iloc[:20000,:])
-    # %%
     sgtembedding_heavy = sgt_.fit_transform(corpus_heavy.iloc[:20000,:])
 
-    # %%
     meta_data = data.loc[:19999, ["index", "tenx_chain_heavy", "tenx_chain_light"]]
 
-    # %%
     # join meta and the two embeddings
 
     embeddings_joined = pd.concat([sgtembedding_heavy.set_index(
@@ -62,7 +58,7 @@ for kappa in kappa_vals:
     df = pd.DataFrame(data=X, columns=['x1', 'x2'])
     df.shape
 
-    #%% plot chain types on pca
+    # plot chain types on pca
 
     types = meta_data.tenx_chain_heavy.to_list() + meta_data.tenx_chain_light.to_list()
 
@@ -71,7 +67,6 @@ for kappa in kappa_vals:
     #colors = list(map(lambda x: colmap[x+1], types))
     sns.scatterplot(df['x1'], df['x2'], hue=types, alpha=0.5)
 
-    # %%
     sgtembedding_heavy_out = sgtembedding_heavy.copy()
     sgtembedding_light_out = sgtembedding_light.copy()
 
@@ -82,6 +77,7 @@ for kappa in kappa_vals:
 
     embeddings_joined_out = pd.concat([sgtembedding_heavy_out.set_index(
         "id"), sgtembedding_light_out.set_index("id")], axis=1)
-    # %%
     embeddings_joined_out.to_csv("embeddings_first_20000_Antibodies_kappa_{}.csv".format(kappa))
 
+
+# %%
