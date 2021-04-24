@@ -129,7 +129,7 @@ rf_params = {'bootstrap': [True, False],
 
 rf = RandomForestClassifier()
 best_rf_model = get_best_model(rf, rf_params, X_train, y_train)
-joblib.dump(best_rf_model, )
+joblib.dump(best_rf_model, 'new_model.sav')
 
 best_rf_model.fit(X_train,y_train)
 
