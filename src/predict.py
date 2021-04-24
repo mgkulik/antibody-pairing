@@ -4,6 +4,10 @@ import pandas as pd
 
 import extra_funcs
 
+from sklearn.ensemble import RandomForestClassifier
+from xgboost import XGBClassifier
+from lightgbm import LGBMClassifier
+
 from pandarallel import pandarallel
 
 # set up argument parsing (make sure these match those in config.yml)
@@ -15,7 +19,7 @@ args = parser.parse_args()
 data = pd.read_csv(args.infile)
 
 # embed both protein sequences respectively
-sgt_ = SGT(kappa=4,
+sgt_ = SGT(kappa=5,
             lengthsensitive=False,
             mode='multiprocessing')
 

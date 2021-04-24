@@ -12,7 +12,7 @@ RUN conda install -c bjrn --yes pandarallel
 
 RUN pip install stg
 
-RUN wget https://www.dropbox.com/s/4sdu3b3u83voldy/finalized_model.sav
+RUN wget https://1drv.ms/u/s!AuXW2eqvluCBg5cOf0WyPfxpkbCjjA?e=IRhGqF
 
 COPY . .
 

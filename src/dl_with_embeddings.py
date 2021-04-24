@@ -1,4 +1,5 @@
 # %% imports
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 import pickle
@@ -15,7 +16,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 # %%
-embeddings_joined = pd.read_csv("embeddings_first_20000_Antibodies_kappa_5.csv")
+embeddings_joined = pd.read_csv("embeddings_first_10000_Antibodies.csv")
 # shuffle frame
 embeddings_joined = embeddings_joined.sample(frac=1)
 paired_embeddings = embeddings_joined.iloc[:round(embeddings_joined.shape[0]/2), :]
@@ -85,7 +86,7 @@ class Model(nn.Module):
 
 #%%
 # train
-model = Model(data.shape[1], 2, [200,100,50], p=0.4)
+model = Model(data.shape[1], 2, [200,100,50], p=0.7)
 print(model)
 
 loss_function = nn.CrossEntropyLoss()
@@ -122,62 +123,16 @@ with torch.no_grad():
     loss = loss_function(y_val, test_outputs)
 print(f'Loss: {loss:.8f}')
 # %%
+# training set
+y_pred = np.argmax(y_pred.detach().numpy(), axis=1)
+print(confusion_matrix(train_outputs, y_pred))
+print(classification_report(train_outputs, y_pred))
+print(accuracy_score(train_outputs, y_pred))
+# test set
+y_val = np.argmax(y_val, axis=1)
 
+print(confusion_matrix(test_outputs, y_val))
+print(classification_report(test_outputs, y_val))
+print(accuracy_score(test_outputs, y_val))
 
-#### try a cnn
-
-
-class Net(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.conv1 = nn.Conv2d(1, 400, 2)
-        self.pool = nn.MaxPool2d(2, 2)
-        self.conv2 = nn.Conv2d(200, 100, 2)
-        self.fc1 = nn.Linear(100 * 2 * 2, 200)
-        self.fc2 = nn.Linear(200, 75)
-        self.fc3 = nn.Linear(75, 2)
-
-    def forward(self, x):
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-        x = x.view(-1, 100 * 2 * 2)
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = self.fc3(x)
-        return x
-
-
-net = Net()
-
-import torch.optim as optim
-
-batch_size=100
-trainloader = torch.utils.data.DataLoader(train_data, batch_size=batch_size,
-                                          shuffle=True, num_workers=2)
-testloader = torch.utils.data.DataLoader(test_data, batch_size=batch_size,
-                                         shuffle=False, num_workers=2)
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
-
-for epoch in range(2):  # loop over the dataset multiple times
-
-    running_loss = 0.0
-    for i, inputs in enumerate(trainloader, 0):
-        # zero the parameter gradients
-        optimizer.zero_grad()
-
-        # forward + backward + optimize
-        y_pred = net(inputs[None, ...])
-        loss = criterion(y_pred, train_outputs)
-        loss.backward()
-        optimizer.step()
-
-        # print statistics
-        running_loss += loss.item()
-        if i % 2000 == 1999:    # print every 2000 mini-batches
-            print('[%d, %5d] loss: %.3f' %
-                  (epoch + 1, i + 1, running_loss / 2000))
-            running_loss = 0.0
-
-print('Finished Training')
 # %%

@@ -1,4 +1,6 @@
-# %% imports
+from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans
+import pickle
 import numpy as np
 import pandas as pd
 import pandarallel
@@ -6,11 +8,13 @@ from pandarallel import pandarallel
 from sgt import SGT
 import sys
 
-# %% ####
+
+# %%
 """try to get embedding from original data"""
 pandarallel.initialize(nb_workers=10)
 data = pd.read_csv("antibody_pairing.csv").reset_index()
 data['index'] = "paired_"+data['index'].astype(str)
+
 # %%
 data = data.loc[:, ["index", "sequence_alignment_aa_heavy", "sequence_alignment_aa_light",
                "tenx_chain_heavy", "tenx_chain_light"]]
@@ -23,13 +27,10 @@ corpus_light['sequence'] = corpus_light['sequence'].map(list)
 # process corpus to the right format (split sequences to list of chars)
 corpus_heavy.head()
 # %%
-%%time
 # Compute SGT embeddings
 sgt_ = SGT(kappa=1,
            lengthsensitive=False,
            mode='multiprocessing')
-
-
 # %%
 # just take the first 1000 lines for testing
 sgtembedding_light = sgt_.fit_transform(corpus_light)
