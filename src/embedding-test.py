@@ -9,6 +9,11 @@ from pandarallel import pandarallel
 from sgt import SGT
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+import torch
+import torch.nn as nn
+
+
 # %%
 """try to get embedding from original data"""
 pandarallel.initialize(nb_workers=4)
@@ -16,11 +21,11 @@ data = pd.read_csv("antibody_pairing.csv").reset_index()
 data['index'] = "paired_"+data['index'].astype(str)
 
 # %%
-data = data.loc[:, ["index", "sequence_heavy", "sequence_light",
+data = data.loc[:, ["index", "sequence_alignment_aa_heavy", "sequence_alignment_aa_light",
                "tenx_chain_heavy", "tenx_chain_light"]]
-corpus_heavy = data.loc[:, ["index","sequence_heavy"]]
+corpus_heavy = data.loc[:, ["index", "sequence_alignment_aa_heavy"]]
 corpus_heavy.columns = ["id", "sequence"]
-corpus_light = data.loc[:, ["index", "sequence_light"]]
+corpus_light = data.loc[:, ["index", "sequence_alignment_aa_light"]]
 corpus_light.columns = ["id", "sequence"]
 corpus_heavy['sequence'] = corpus_heavy['sequence'].map(list)
 corpus_light['sequence'] = corpus_light['sequence'].map(list)
@@ -79,3 +84,13 @@ embeddings_joined_out = pd.concat([sgtembedding_heavy_out.set_index(
 embeddings_joined_out.to_csv("embeddings_first_10000_Antibodies.csv")
 
 # %%
+# embeddings_joined = pd.read_csv("embeddings_first_10000_Antibodies.csv")
+# shuffle frame
+embeddings_joined = embeddings_joined.sample(frac=1)
+paired_embeddings = embeddings_joined.iloc[:round(embeddings_joined.shape[0]/2), :]
+non_paired_embeddings = embeddings_joined.iloc[round(embeddings_joined.shape[0]/2):, :]
+
+
+# %%
+numerical_columns = embeddings_joined.columns[1:]
+

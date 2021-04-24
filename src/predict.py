@@ -19,18 +19,5 @@ modelfile = 'finalized_model.sav'
 loaded_model = joblib.load(modelfile)
 y_pred = loaded_model.predict_proba(encoded)
 
-<<<<<<< HEAD
-
 # SAVE PREDICTIONS WITH THE COLUMN NAME prediction IN THE FILE predictions.csv
 pd.DataFrame(y_pred[:, 1], columns=['prediction']).to_csv("predictions.csv", index=False)
-
-
-
-
-
-
-
-=======
-# SAVE PREDICTIONS WITH THE COLUMN NAME prediction IN THE FILE predictions.csv
-pd.DataFrame(y_pred[:, 1], columns=['prediction']).to_csv("predictions.csv", index=False)
->>>>>>> 18567c9360c0b91fbc2a0a44ce7df63b5ddf7581
