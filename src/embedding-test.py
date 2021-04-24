@@ -9,109 +9,75 @@ from pandarallel import pandarallel
 from sgt import SGT
 import matplotlib.pyplot as plt
 import seaborn as sns
-# %%
-# load toy data
-# Loading uniprot data
-corpus = pd.read_csv('prot_data_test.csv')
 
-# Data preprocessing for uniprot data
-corpus = corpus.loc[:, ['Entry', 'Sequence']]
-corpus.columns = ['id', 'sequence']
-corpus['sequence'] = corpus['sequence'].map(list)
-corpus
+import torch
+import torch.nn as nn
+
 
 # %%
-%%time
-# Compute SGT embeddings
-sgt_ = SGT(kappa=1,
-           lengthsensitive=False,
-           mode='multiprocessing')
-sgtembedding_df = sgt_.fit_transform(corpus)
-# Set the id column as the dataframe index
-sgtembedding_df = sgtembedding_df.set_index('id')
-sgtembedding_df
-
-# %%
-# run PCA and cluster
-pca = PCA(n_components=2)
-pca.fit(sgtembedding_df)
-
-X = pca.transform(sgtembedding_df)
-
-print(np.sum(pca.explained_variance_ratio_))
-df = pd.DataFrame(data=X, columns=['x1', 'x2'])
-df.head()
-#%% run kmaens on pca
-kmeans = KMeans(n_clusters=3, max_iter=300)
-kmeans.fit(df)
-
-labels = kmeans.predict(df)
-centroids = kmeans.cluster_centers_
-
-fig = plt.figure(figsize=(5, 5))
-colmap = {1: 'r', 2: 'g', 3: 'b'}
-colors = list(map(lambda x: colmap[x+1], labels))
-plt.scatter(df['x1'], df['x2'], color=colors, alpha=0.5, edgecolor=colors)
-
-# %% ####
 """try to get embedding from original data"""
-pandarallel.initialize(nb_workers=4)
+pandarallel.initialize(nb_workers=8)
 data = pd.read_csv("antibody_pairing.csv")
+# data['index'] = "paired_"+data['index'].astype(str)
+
 # %%
-data = data.loc[:, ["tenx_barcode", "sequence_heavy", "sequence_light",
+data = data.loc[:, ["index", "sequence_alignment_aa_heavy", "sequence_alignment_aa_light",
                "tenx_chain_heavy", "tenx_chain_light"]]
-corpus_heavy = data.loc[:, ["tenx_barcode","sequence_heavy"]]
+corpus_heavy = data.loc[:, ["index", "sequence_alignment_aa_heavy"]]
 corpus_heavy.columns = ["id", "sequence"]
-corpus_light = data.loc[:, ["tenx_barcode", "sequence_light"]]
+corpus_light = data.loc[:, ["index", "sequence_alignment_aa_light"]]
 corpus_light.columns = ["id", "sequence"]
 corpus_heavy['sequence'] = corpus_heavy['sequence'].map(list)
 corpus_light['sequence'] = corpus_light['sequence'].map(list)
 # process corpus to the right format (split sequences to list of chars)
 corpus_heavy.head()
-
 # %%
-# just take the first 1000 lines for testing
-sgtembedding_light = sgt_.fit_transform(corpus_light.iloc[:1000,:])
-# %%
-sgtembedding_heavy = sgt_.fit_transform(corpus_heavy.iloc[:1000,:])
+# Compute SGT embeddings
+kappa_vals=[i+1 for i in range(10)]
+for kappa in kappa_vals:
+    sgt_ = SGT(kappa=kappa,
+            lengthsensitive=False,
+            mode='multiprocessing')
+    # just take the first 1000 lines for testing
+    sgtembedding_light = sgt_.fit_transform(corpus_light.iloc[:20000,:])
+    sgtembedding_heavy = sgt_.fit_transform(corpus_heavy.iloc[:20000,:])
 
-# %%
-meta_data = data.loc[:999, ["tenx_barcode", "tenx_chain_heavy", "tenx_chain_light"]]
+    meta_data = data.loc[:19999, ["index", "tenx_chain_heavy", "tenx_chain_light"]]
 
-# %%
-# join meta and the two embeddings
-embeddings_joined = pd.concat([sgtembedding_heavy.set_index(
-    "id"), sgtembedding_light.set_index("id")], axis=0)
-# run PCA and cluster
-pca = PCA(n_components=2)
-pca.fit(embeddings_joined)
+    # join meta and the two embeddings
 
-X = pca.transform(embeddings_joined)
+    embeddings_joined = pd.concat([sgtembedding_heavy.set_index(
+        "id"), sgtembedding_light.set_index("id")], axis=0)
+    # run PCA and cluster
+    pca = PCA(n_components=2)
+    pca.fit(embeddings_joined)
 
-print(np.sum(pca.explained_variance_ratio_))
-df = pd.DataFrame(data=X, columns=['x1', 'x2'])
-df.shape
-# %%
-#%% run kmaens on pca
-kmeans = KMeans(n_clusters=3, max_iter=300)
-kmeans.fit(df)
+    X = pca.transform(embeddings_joined)
 
-labels = kmeans.predict(df)
-centroids = kmeans.cluster_centers_
+    print(np.sum(pca.explained_variance_ratio_))
+    df = pd.DataFrame(data=X, columns=['x1', 'x2'])
+    df.shape
 
-fig = plt.figure(figsize=(5, 5))
-colmap = {1: 'r', 2: 'g', 3: 'b'}
-colors = list(map(lambda x: colmap[x+1], labels))
-plt.scatter(df['x1'], df['x2'], color=colors, alpha=0.5, edgecolor=colors)
+    # plot chain types on pca
 
-# %%
-#%% plot chain types on pca
+    types = meta_data.tenx_chain_heavy.to_list() + meta_data.tenx_chain_light.to_list()
 
-types = meta_data.tenx_chain_heavy.to_list() + meta_data.tenx_chain_light.to_list()
+    fig = plt.figure(figsize=(5, 5))
+    colmap = {'IGH': 'r', 'IGK': 'g', 'IGL': 'b'}
+    #colors = list(map(lambda x: colmap[x+1], types))
+    sns.scatterplot(df['x1'], df['x2'], hue=types, alpha=0.5)
 
-fig = plt.figure(figsize=(5, 5))
-colmap = {'IGH': 'r', 'IGK': 'g', 'IGL': 'b'}
-#colors = list(map(lambda x: colmap[x+1], types))
-sns.scatterplot(df['x1'], df['x2'], hue=types, alpha=0.5)
+    sgtembedding_heavy_out = sgtembedding_heavy.copy()
+    sgtembedding_light_out = sgtembedding_light.copy()
+
+    colnames = ["heavy_" + str(col) for col in sgtembedding_heavy_out.columns[1:]]
+    sgtembedding_heavy_out.columns = ["id"] + colnames
+    colnames = ["light_" + str(col) for col in sgtembedding_light_out.columns[1:]]
+    sgtembedding_light_out.columns = ["id"] + colnames
+
+    embeddings_joined_out = pd.concat([sgtembedding_heavy_out.set_index(
+        "id"), sgtembedding_light_out.set_index("id")], axis=1)
+    embeddings_joined_out.to_csv("embeddings_first_20000_Antibodies_kappa_{}.csv".format(kappa))
+
 
 # %%
