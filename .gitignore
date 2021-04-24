@@ -132,3 +132,7 @@ dmypy.json
 
 
 antibody_pairing.csv*
+
+*.png
+
+src/embeddings_first_1000_Antibodies.csv
