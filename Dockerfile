@@ -2,7 +2,9 @@ FROM continuumio/miniconda3
 
 WORKDIR /home/biolib
 
-RUN conda install -c bioconda --yes anarci scikit-learn pandas numpy matplotlib \
+RUN conda install -c bioconda --yes python=3.8 scikit-learn pandas numpy matplotlib 
+
+RUN conda install -c conda-forge xgboost lightgbm \
     && \
     conda clean -afy
 
