@@ -2,7 +2,7 @@ FROM continuumio/miniconda3
 
 WORKDIR /home/biolib
 
-RUN conda install -c bioconda --yes anarci scikit-learn pandas numpy matplotlib pandarallel \
+RUN conda install -c bioconda --yes anarci scikit-learn pandas numpy matplotlib \
     && \
     conda clean -afy
 
