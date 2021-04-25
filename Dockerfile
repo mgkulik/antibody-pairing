@@ -10,7 +10,7 @@ RUN conda install -c conda-forge xgboost lightgbm \
 
 RUN conda install -c bjrn --yes pandarallel 
 
-RUN pip install stg
+RUN pip install sgt
 
 RUN wget https://1drv.ms/u/s!AuXW2eqvluCBg5cOf0WyPfxpkbCjjA?e=IRhGqF
 
