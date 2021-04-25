@@ -18,7 +18,7 @@ from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, roc_auc_score, roc_curve, f1_score
 
-data_embeddings = pd.read_csv('embeddings_first_20000_Antibodies_kappa_1.csv').reset_index()
+data_embeddings = pd.read_csv('all_pairings.csv').reset_index()
 data_embeddings['index'] = "paired_"+data_embeddings['index'].astype(str)
 data_embeddings = data_embeddings.drop(columns=['id'])
 data_embeddings['class'] = 1
@@ -112,23 +112,23 @@ y=data_all_embeddings['class']  # Labels
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=seed)
 
 # =============================================================================
-rf_params = {'bootstrap': [True, False],
-             'max_depth': [10, 30, 60, 90, 100, None],
-             'max_features': ['auto', 'sqrt'],
-             'min_samples_leaf': [1, 2, 4],
-             'min_samples_split': [2, 5, 10],
-             'n_estimators': [200, 400]}
+# rf_params = {'bootstrap': [True, False],
+#              'max_depth': [10, 30, 60, 90, 100, None],
+#              'max_features': ['auto', 'sqrt'],
+#              'min_samples_leaf': [1, 2, 4],
+#              'min_samples_split': [2, 5, 10],
+#              'n_estimators': [200, 400]}
 # =============================================================================
 
-# rf_params = {'bootstrap': [True, False],
-#              'max_depth': [10, 100, None],
-#              'max_features': ['auto', 'sqrt'],
-#              'min_samples_leaf': [1, 4],
-#              'min_samples_split': [2, 10],
-#              'n_estimators': [100, 100]}
+rf_params = {'bootstrap': [True, False],
+             'max_depth': [10, 100, None],
+             'max_features': ['auto', 'sqrt'],
+             'min_samples_leaf': [1, 4],
+             'min_samples_split': [2, 10],
+             'n_estimators': [100, 100]}
 
 rf = RandomForestClassifier()
-best_rf_model = get_best_model(rf, rf_params, X_train, y_train)
+best_rf_model = get_best_model(rf, rf_params, X_train, y_train, st=0 )
 joblib.dump(best_rf_model, 'new_model.sav')
 
 best_rf_model.fit(X_train,y_train)

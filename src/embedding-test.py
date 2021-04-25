@@ -33,14 +33,15 @@ corpus_light['sequence'] = corpus_light['sequence'].map(list)
 corpus_heavy.head()
 # %%
 # Compute SGT embeddings
-kappa_vals=[i+1 for i in range(10)]
+# kappa_vals=[i+1 for i in range(10)]
+kappa_vals  = [5]
 for kappa in kappa_vals:
     sgt_ = SGT(kappa=kappa,
             lengthsensitive=False,
             mode='multiprocessing')
     # just take the first 1000 lines for testing
-    sgtembedding_light = sgt_.fit_transform(corpus_light.iloc[:20000,:])
-    sgtembedding_heavy = sgt_.fit_transform(corpus_heavy.iloc[:20000,:])
+    sgtembedding_light = sgt_.fit_transform(corpus_light.iloc[:100000,])
+    sgtembedding_heavy = sgt_.fit_transform(corpus_heavy.iloc[:100000,])
 
     meta_data = data.loc[:19999, ["index", "tenx_chain_heavy", "tenx_chain_light"]]
 
@@ -78,7 +79,8 @@ for kappa in kappa_vals:
 
     embeddings_joined_out = pd.concat([sgtembedding_heavy_out.set_index(
         "id"), sgtembedding_light_out.set_index("id")], axis=1)
-    embeddings_joined_out.to_csv("embeddings_first_20000_Antibodies_kappa_{}.csv".format(kappa))
+    #embeddings_joined_out.to_csv("embeddings_first_20000_Antibodies_kappa_{}.csv".format(kappa))
+    embeddings_joined_out.to_csv("all_pairings.csv")
 
 
 # %%

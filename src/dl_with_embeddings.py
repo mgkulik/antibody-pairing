@@ -16,7 +16,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 # %%
-embeddings_joined = pd.read_csv("embeddings_first_10000_Antibodies.csv")
+embeddings_joined = pd.read_csv("../../csv_hackathon/all_pairings.csv")
 # shuffle frame
 embeddings_joined = embeddings_joined.sample(frac=1)
 paired_embeddings = embeddings_joined.iloc[:round(embeddings_joined.shape[0]/2), :]
@@ -114,7 +114,7 @@ print(f'epoch: {i:3} loss: {single_loss.item():10.10f}')
 plt.plot(range(epochs), aggregated_losses)
 plt.ylabel('Loss')
 plt.xlabel('epoch')
-
+plt.savefig("loss-curve-fully-connected.png")
 # %% 
 # predict
 
