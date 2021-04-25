@@ -42,3 +42,4 @@ y_pred = loaded_model.predict_proba(input_transformed)
 
 # SAVE PREDICTIONS WITH THE COLUMN NAME prediction IN THE FILE predictions.csv
 pd.DataFrame(y_pred[:, 1], columns=['prediction']).to_csv("predictions.csv", index=False)
+print(pd.DataFrame(y_pred[:, 1], columns=['prediction']))
