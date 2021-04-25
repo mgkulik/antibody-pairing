@@ -36,7 +36,7 @@ input_transformed = pd.concat([heavy_embedding.set_index("id"), light_embedding.
 
 
 # PREDICT
-modelfile = 'finalized_model.sav'
+modelfile = 'src/finalized_model.sav'
 loaded_model = joblib.load(modelfile)
 y_pred = loaded_model.predict_proba(input_transformed)
 
