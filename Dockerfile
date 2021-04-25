@@ -12,7 +12,7 @@ RUN conda install -c bjrn --yes pandarallel
 
 RUN pip install sgt
 
-RUN wget https://www.dropbox.com/s/39w7jd7wxp2vujt/finalized_model.sav?dl=0
+RUN wget https://www.dropbox.com/s/39w7jd7wxp2vujt/finalized_model.sav
 
 COPY . .
 
