@@ -14,6 +14,6 @@ RUN pip install sgt
 
 COPY . .
 
-COPY src/finalized_model.sav . 
+COPY src/finalized_model1.sav . 
 
 ENTRYPOINT [ "python", "src/predict.py" ]
